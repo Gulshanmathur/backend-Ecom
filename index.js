@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require('cors')
 const { createProduct } = require("./controller/Product");
 const productsRouter = require("./routes/Products")
 const categoriesRouter = require("./routes/Categories")
@@ -12,6 +13,9 @@ async function main() {
   console.log("database connected");  
 }
 //middleware
+server.use(cors(
+  {exposedHeaders : ['X-Total-Count']}
+))
 server.use(express.json());
 server.use(express.urlencoded({extended: false}));
 server.use('/products',productsRouter)
@@ -23,6 +27,6 @@ server.get("/",(req,res)=>{
     res.json({status:'success'});
 })
 
-server.listen(8080,()=>{
+server.listen(8000,()=>{
     console.log("server started");
-})
+}) 
