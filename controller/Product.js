@@ -18,7 +18,7 @@ exports.fetchAllProducts = async (req, res) => {
   // pagination = {_page:1, _limit: 10} //_page=1&_limit=10
 
   // Initialize an empty filter object
-  let filter = {};
+  let filter = { deleted: { $ne: true } };
 
   // Check for category and brand in the request query and add to the filter
   if (req.query.category) {
@@ -28,6 +28,8 @@ exports.fetchAllProducts = async (req, res) => {
   if (req.query.brand) {
     filter.brand = req.query.brand;
   }
+
+  // filter.deleted = {deleted:{$ne:true}};
      // Initialize the query with the filter 
       let query = Product.find(filter);
       const totalDocs = await Product.countDocuments(query).exec();

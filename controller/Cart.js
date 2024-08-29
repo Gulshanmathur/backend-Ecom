@@ -6,7 +6,6 @@ exports.fetchCartByUser = async (req,res)=>{
   
     try {
         const cartItems = await Cart.find({user:user}).populate('product');
-        console.log(cartItems)
         res.status(200).json(cartItems)
     } catch (error) {
         res.status(400).json(error) 
@@ -47,7 +46,9 @@ exports.addToCart = async (req, res) => {
         cart[key] = req.body[key];
       })
       const updatedCart = await cart.save();
-      res.status(200).json(updatedCart);
+      const result = await updatedCart.populate('product')
+      
+      res.status(200).json(result);
       
     } catch (error) {
       res.status(400).json({ message: error.message });
