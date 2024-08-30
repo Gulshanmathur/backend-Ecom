@@ -18,7 +18,12 @@ exports.fetchAllProducts = async (req, res) => {
   // pagination = {_page:1, _limit: 10} //_page=1&_limit=10
 
   // Initialize an empty filter object
-  let filter = { deleted: { $ne: true } };
+  
+  let condition = {};
+  if(!req.query.admin){
+     condition.deleted = { $ne: true }
+  } 
+  let filter = condition;
 
   // Check for category and brand in the request query and add to the filter
   if (req.query.category) {

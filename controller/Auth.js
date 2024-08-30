@@ -4,7 +4,7 @@ const User = require("../model/User");
 exports.createUser = async (req, res) => {
   try {
     const user = await User.create(req.body);
-    res.status(201).json(user); // Return created product with status 201 (Created)
+    res.status(201).json({id:user.id, role:user.role}); // Return created product with status 201 (Created)
   } catch (error) {
     console.error(error); // Log the error for debugging purposes
     res.status(400).json({ message: "Error signing up user", error }); // Provide a user-friendly error message
@@ -30,8 +30,8 @@ exports.loginUser = async (req, res) => {
     }
     // Return the user data with projection
     //TODO: we will make addresses independent from login()
-    const { _id, name, role, addresses } = user; // Destructure the needed fields
-    res.status(200).json({ id: _id, name, email:user.email, role, addresses});
+    const { _id, name, role } = user; // Destructure the needed fields
+    res.status(200).json({ id: _id, name, role});
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
