@@ -5,16 +5,15 @@ const userSchema = new mongoose.Schema({
       type: String,
       required: true,
       trim: true,
-      unique: true,
-    },
+      // unique: true,
+    }, 
     password: {
-      type: String,
-  
-      required: true,
+      type: Buffer,
+      required: true, 
     },
     role: {
       type: String,
-      required: true,
+      required: true,  
       default: 'user',
     },
     addresses: { 
@@ -22,7 +21,8 @@ const userSchema = new mongoose.Schema({
    // any data types
     },
     name: String,
-    orders: { type: [mongoose.Schema.Types.Mixed] },
+    // orders: { type: [mongoose.Schema.Types.Mixed] },
+    salt : Buffer
   },
   { timestamps: true }
   );
