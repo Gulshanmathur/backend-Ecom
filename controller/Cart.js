@@ -1,11 +1,9 @@
 const Cart = require("../model/Cart");
 
 exports.fetchCartByUser = async (req,res)=>{
-  const {user} = req.query;
-  console.log({user});
-  
+  const {id} = req.user;  
     try {
-        const cartItems = await Cart.find({user:user}).populate('product');
+        const cartItems = await Cart.find({user:id}).populate('product');
         res.status(200).json(cartItems)
     } catch (error) {
         res.status(400).json(error) 
@@ -13,8 +11,9 @@ exports.fetchCartByUser = async (req,res)=>{
 }
 
 exports.addToCart = async (req, res) => {
+  const {id} = req.user;
     try {
-      const newCart = new Cart(req.body);
+      const newCart = new Cart({...req.body,user:id});
       const savedCart = await newCart.save(); 
       const result = await savedCart.populate('product')
       res.status(201).json(result); // Return created product with status 201 (Created)

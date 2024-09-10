@@ -1,13 +1,13 @@
 const Order = require("../model/Order");
 
-exports.fetchOrdersByUser = async (req,res)=>{
-  const {userId} = req.params;
+exports.fetchOrdersByUser = async (req,res)=>{  
+  const {id} = req.user
   // console.log({userId});
   
     try {
-        const orders = await Order.find({user:userId})  //.populate('product');
+        const orders = await Order.find({user:id})  //.populate('product');
         res.status(200).json(orders)
-    } catch (error) {
+    } catch (err) {
         res.status(400).json(err)
     }
 }
@@ -36,9 +36,7 @@ exports.createOrder = async (req, res) => {
   }; 
 
   exports.updateOrder = async(req,res) =>{
-    const {id} = req.params; 
-    console.log(id);
-       
+    const {id} = req.params;        
     try {
       const order = await Order.findById(id);  
       if(!order){
@@ -69,7 +67,6 @@ exports.createOrder = async (req, res) => {
       let query = Order.find(filter);
       
       const totalDocs = await Order.countDocuments(query).exec();
-      console.log({totalDocs});
       
    //TODO : How to get sort on discounted Price not on actual price
   // Check for sorting parameters

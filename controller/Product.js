@@ -18,7 +18,6 @@ exports.fetchAllProducts = async (req, res) => {
   // pagination = {_page:1, _limit: 10} //_page=1&_limit=10
 
   // Initialize an empty filter object
-  
   let condition = {};
   if(!req.query.admin){
      condition.deleted = { $ne: true }
@@ -30,13 +29,14 @@ exports.fetchAllProducts = async (req, res) => {
     filter.category = { $in: req.query.category }; // Use $in for array of categories
     //the $in operator is always used with an array of values
   }
-  if (req.query.brand) {
-    filter.brand = req.query.brand;
+  if (req.query.Brand) {
+    filter.brand = req.query.Brand;
   }
 
   // filter.deleted = {deleted:{$ne:true}};
      // Initialize the query with the filter 
       let query = Product.find(filter);
+      console.log({query,filter});
       const totalDocs = await Product.countDocuments(query).exec();
       
    //TODO : How to get sort on discounted Price not on actual price

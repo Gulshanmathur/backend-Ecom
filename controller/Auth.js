@@ -1,32 +1,76 @@
 // information related login and signUp
 const User = require("../model/User");
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const { sanitizeUser } = require("../services/common");
-const SECRET_KEY = 'SECRET_KEY';
+const { findOne } = require("../model/Product");
+const SECRET_KEY = "SECRET_KEY";
 exports.createUser = async (req, res) => {
   try {
     const salt = 10;
-    const {username,password} = req.body;
-    const hashedPassword = await bcrypt.hash(password, salt);   //salt = 10
-    const doc = await User.create({email:username,password:hashedPassword,salt});
+    console.log("line 10",req.body);
     
-    req.login(sanitizeUser(doc),(err)=>{ // this is also call serializer and adds to session
-      if(err){
-        res.status(400).json(err)
-      }else{
-        const token = jwt.sign(sanitizeUser(doc),SECRET_KEY , { expiresIn: '1h' });
-        res.status(201).json(token) // Return created product with status 201 (Created)
+    const { email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, salt); //salt = 10
+    const doc = await User.create({
+      email: email,
+      password: hashedPassword,
+      salt,
+    });
+
+    req.login(sanitizeUser(doc), (err) => {
+      // this is also call serializer and adds to session
+      if (err) {
+        res.status(400).json(err);
+      } else {
+        const token = jwt.sign(sanitizeUser(doc), SECRET_KEY, {
+          expiresIn: "1h",
+        });
+        res
+          .cookie("jwt", token, {
+            expires: new Date(Date.now() + 3600000),
+            httpOnly: true
+          })
+          .status(201)
+          .json(token);
+        // Return created product with status 201 (Created)
       }
-    })
-    
+    });
   } catch (error) {
     console.error(error); // Log the error for debugging purposes
     res.status(400).json({ message: "Error signing up user", error }); // Provide a user-friendly error message
   }
 };
- 
+
 exports.loginUser = async (req, res) => {
+  const {email, password} =  req.body;
+  const doc = await User.findOne({email:email});
+  const isMatch = await bcrypt.compare(password,doc.password.toString('utf-8'));
+  if (!isMatch) {
+     res.status(401).json({message:"unauthorized user"})
+  }
+  else{
+    req.login(sanitizeUser(doc), (err) => {
+      // this is also call serializer and adds to session
+      if (err) {
+        res.status(400).json(err);
+      } else {
+        const token = jwt.sign(sanitizeUser(doc), SECRET_KEY, {
+          expiresIn: "1h",
+        });
+        res
+          .cookie("jwt", token, {
+            expires: new Date(Date.now() + 3600000),
+            httpOnly: true
+          })
+          .status(201)
+          .json(token);
+        // Return created product with status 201 (Created)
+      }
+    });
+  }
+  
+  
   /*
   const { email, password } = req.body;
   try {
@@ -53,12 +97,12 @@ exports.loginUser = async (req, res) => {
   }
     */
   // const token = jwt.sign(sanitizeUser(req.user), SECRET_KEY, { expiresIn: '1h' });
-  res.json({status:"success login"});  // req.user is a special object created by passport when user authenticated
+  // req.user is a special object created by passport when user authenticated
 };
 
-exports.checkUser = async (req,res)=>{
-  // res.json(req.user) 
+exports.checkUser = async (req, res) => {
+  // res.json(req.user)
   console.log("inside check", req.user);
-  
-  res.json(req.user)
-}
+
+  res.json(req.user);
+};

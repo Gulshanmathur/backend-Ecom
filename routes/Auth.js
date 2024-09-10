@@ -5,7 +5,7 @@ const  Passport  = require("passport");
 
 
 router.post('/signup',createUser)
-      .post("/login",Passport.authenticate('local'),loginUser)
+      .post("/login",loginUser)
       .get('/check',Passport.authenticate('jwt'),checkUser)
 
 module.exports = router;  
