@@ -3,8 +3,6 @@ const User = require("../model/User");
 
 exports.fetchUserById = async (req,res)=>{
     const {id} = req.user;
-    console.log("reqUser",req.user);
-    
     try {
         const user = await User.findById(id);    
         res.status(200).json(user)

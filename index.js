@@ -30,7 +30,8 @@ async function main() {
   console.log("database connected");  
 }
 const opts = {
-  jwtFromRequest: cookieExtracter,
+  // ExtractJwt.fromAuthHeaderAsBearerToken(),
+  jwtFromRequest:  cookieExtracter,
   secretOrKey:SECRET_KEY ,
 };
  
@@ -82,7 +83,7 @@ passport.use('local',new LocalStrategy(
         return done(null, false, { message: 'Invalid Credentials' });
       }
       const token = jwt.sign(sanitizeUser(user),SECRET_KEY , { expiresIn: '1h' });
-      return done(null, {token});  // this line send to serializer
+      return done(null, {id:user.id,role:user.role});  // this line send to serializer
     } catch (err) {
       return done(err);
     }
@@ -90,15 +91,16 @@ passport.use('local',new LocalStrategy(
 ));
 
 passport.use(
-  new JwtStrategy(opts, async (jwt_payload, done) => {
-    try {
-      console.log("inside jwt",jwt_payload);
-       
-      const user = await User.findOne({id:jwt_payload.id}); // Assuming the ID is stored in the token
+  new JwtStrategy(opts, async (jwt_payload, done) => {  
+    try {     
+      const user = await User.findOne({id:jwt_payload.sub}); // Assuming the ID is stored in the token
+     
+      
       if (user) {
+     
         return done(null,sanitizeUser(user)); // this calls serializer
       } else {
-        return done(null, false); // User not found
+        return done(null, false); // User not found 
       }         
     } catch (err) {
       return done(err, false);
@@ -107,9 +109,7 @@ passport.use(
 );
 
 // this create session variable req.user on being called from callbacks
-passport.serializeUser((user, done) => {
-  console.log({user});
-  
+passport.serializeUser((user, done) => { 
   done(null,{id:user.id,role:user.role});  // here session has created   //{id:user.id,role:user.role}
   //after above done() function end here login api called
 });

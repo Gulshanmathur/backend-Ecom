@@ -36,7 +36,6 @@ exports.fetchAllProducts = async (req, res) => {
   // filter.deleted = {deleted:{$ne:true}};
      // Initialize the query with the filter 
       let query = Product.find(filter);
-      console.log({query,filter});
       const totalDocs = await Product.countDocuments(query).exec();
       
    //TODO : How to get sort on discounted Price not on actual price
