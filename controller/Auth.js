@@ -4,12 +4,11 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { sanitizeUser } = require("../services/common");
 const { findOne } = require("../model/Product");
-const SECRET_KEY = "SECRET_KEY";
+const dotenv = require('dotenv');
+dotenv.config()
 exports.createUser = async (req, res) => {
   try {
-    const salt = 10;
-    console.log("line 10",req.body);
-    
+    const salt = 10; 
     const { email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, salt); //salt = 10
     const doc = await User.create({
@@ -23,13 +22,14 @@ exports.createUser = async (req, res) => {
       if (err) {
         res.status(400).json(err);
       } else {
-        const token = jwt.sign(sanitizeUser(doc), SECRET_KEY, {
+        const token = jwt.sign(sanitizeUser(doc), process.env.SECRET_KEY, {
           expiresIn: "1h",
         });
         res
           .cookie("jwt", token, {
             expires: new Date(Date.now() + 3600000),
-            httpOnly: true
+            httpOnly: true,
+            secure:false
           })
           .status(201)
           .json({id:doc.id,role:doc.role});
@@ -43,28 +43,29 @@ exports.createUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-  const {email, password} =  req.body;
-
+  const {email, password} =  req.body; 
   const doc = await User.findOne({email:email});
   const isMatch = await bcrypt.compare(password,doc.password.toString('utf-8'));
   if (!isMatch) {
      res.status(401).json({message:"unauthorized user"})
-  }
+  } 
   else{
     req.login(sanitizeUser(doc), (err) => {
       // this is also call serializer and adds to session
       if (err) {
         res.status(400).json(err);
       } else {
-        const token = jwt.sign(sanitizeUser(doc), SECRET_KEY, {
+        const token = jwt.sign(sanitizeUser(doc), process.env.SECRET_KEY, {
           expiresIn: "1h",
         }); 
         res
           .cookie("jwt", token, {
             expires: new Date(Date.now() + 3600000),
-            httpOnly: true
+            httpOnly: true,
+            secure: false, // Set to true if using HTTPS
+            // sameSite:'None'  // Important for cross-origin cookies
           })
-          .status(201)
+          .status(200)
           .json({id:doc.id,role:doc.role});
         // Return created product with status 201 (Created)
       }
@@ -101,12 +102,20 @@ exports.loginUser = async (req, res) => {
   // req.user is a special object created by passport when user authenticated
 };
 
-exports.checkUser = async (req, res) => {
-  console.log("inside checkauth", req.user);
-  
+exports.checkUser = async (req, res) => {  
   if(req.user){
     res.json(req.user);  
   }else{
-    res.status(401).json({message:"User not authenticated"});
+    res.status(401).json({error:"User not authenticated"});
   }
 };
+
+exports.signOut = async (req,res)=>{
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    secure: false, // Set to true if using HTTPS
+    expires: new Date(0) // Set expiration date to the past to delete the cookie
+  });
+  res.status(200).json({ message: 'Signed out successfully' });
+
+}

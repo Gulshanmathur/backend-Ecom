@@ -15,6 +15,7 @@
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "jsonwebtoken": "^9.0.2",
@@ -23,7 +24,8 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
-    "serve-static": "^1.15.0"
+    "serve-static": "^1.15.0",
+    "stripe": "^16.11.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17"
