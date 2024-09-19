@@ -80,7 +80,7 @@ server.post('/stripe-webhook', express.raw({type: 'application/json'}), (request
  
 //middleware
 // server.use('/', serveStatic(path.join(__dirname, '../Frontend/dist')));
-// server.use(express.static('dist'))
+server.use(express.static('dist'))
 server.use(session({
   secret: process.env.SESSION_SECRET_KEY,
   resave: false, // don't save session if unmodified
@@ -106,7 +106,7 @@ server.use('/users',isAuth,usersRouter)
 server.use('/auth',authRouter)
 server.use('/cart',isAuth,cartRouter)
 server.use('/orders',isAuth,ordersRouter) 
-
+// server.get('*', (req,res)=>res.sendFile(path.resolve('dist','index.html')));
 //pasport strategies
 passport.use('local',new LocalStrategy(
   {usernameField: 'email'},
@@ -186,7 +186,7 @@ server.post('/create-payment-intent', async (req, res) => {
 });
 
 
-
-server.listen(process.env.PORT,()=>{
+const port = process.env.PORT || 8000;
+server.listen(port,()=>{
     console.log("server started");
 })  
