@@ -79,7 +79,7 @@ server.post('/stripe-webhook', express.raw({type: 'application/json'}), (request
 });
  
 //middleware
-server.use('/', serveStatic(path.join(__dirname, '../Frontend/dist')));
+// server.use('/', serveStatic(path.join(__dirname, '../Frontend/dist')));
 // server.use(express.static('dist'))
 server.use(session({
   secret: process.env.SESSION_SECRET_KEY,
@@ -107,7 +107,7 @@ server.use('/auth',authRouter)
 server.use('/cart',isAuth,cartRouter)
 server.use('/ordersnow',isAuth,ordersRouter) 
 
-server.get('*', (req,res)=>res.sendFile(path.resolve(__dirname, '..', 'Frontend', 'dist', 'index.html')));
+// server.get('*', (req,res)=>res.sendFile(path.resolve(__dirname, '..', 'Frontend', 'dist', 'index.html')));
 //pasport strategies
 passport.use('local',new LocalStrategy(
   {usernameField: 'email'},
