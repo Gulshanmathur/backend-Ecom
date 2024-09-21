@@ -75,12 +75,12 @@ server.post('/stripe-webhook', express.raw({type: 'application/json'}), (request
   }
 
   // Return a 200 response to acknowledge receipt of the event
-  response.send();
+  response.send(); 
 });
  
 //middleware
-// server.use('/', serveStatic(path.join(__dirname, '../Frontend/dist')));
-server.use(express.static('dist'))
+server.use('/', serveStatic(path.join(__dirname, '../Frontend/dist')));
+// server.use(express.static('dist'))
 server.use(session({
   secret: process.env.SESSION_SECRET_KEY,
   resave: false, // don't save session if unmodified
@@ -105,8 +105,9 @@ server.use('/brands',isAuth,brandRouter)
 server.use('/users',isAuth,usersRouter)
 server.use('/auth',authRouter)
 server.use('/cart',isAuth,cartRouter)
-server.use('/orders',isAuth,ordersRouter) 
-// server.get('*', (req,res)=>res.sendFile(path.resolve('dist','index.html')));
+server.use('/ordersnow',isAuth,ordersRouter) 
+
+server.get('*', (req,res)=>res.sendFile(path.resolve(__dirname, '..', 'Frontend', 'dist', 'index.html')));
 //pasport strategies
 passport.use('local',new LocalStrategy(
   {usernameField: 'email'},
@@ -184,6 +185,8 @@ server.post('/create-payment-intent', async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
+
+
 
 
 const port = process.env.PORT || 8000;

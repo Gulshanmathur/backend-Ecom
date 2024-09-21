@@ -5,12 +5,12 @@ exports.fetchBrands = async (req,res)=>{
         const brands = await Brand.find({});
         res.status(200).json(brands)
     } catch (error) {
-        res.status(400).json(err)
+        res.status(400).json(error)
     }
 }
 
 exports.createBrand = async (req, res) => {
-    try {
+    try {  
       const newBrand = new Brand(req.body);
       const savedBrand = await newBrand.save();
   
