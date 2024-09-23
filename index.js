@@ -86,7 +86,12 @@ server.use(session({
   secret: process.env.SESSION_SECRET_KEY,
   resave: false, // don't save session if unmodified
   saveUninitialized: false, // don't create session until something stored
-  // store: new SQLiteStore({ db: 'sessions.db', dir: './var/db' })
+  cookie: {
+    httpOnly: true, // Prevents JavaScript access to cookies
+    secure:true,
+    sameSite: 'none', // Set SameSite attribute; can be 'none', 'lax', or 'strict'
+    maxAge: 3600000 // Cookie expiration time in milliseconds (1 hour)
+  }
 }));
 // server.use(cors({
 //   origin: 'http://localhost:8001', // React app's URL
