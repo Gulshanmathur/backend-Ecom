@@ -88,7 +88,7 @@ server.use(session({
   saveUninitialized: false, // don't create session until something stored
   cookie: {
     httpOnly: true, // Prevents JavaScript access to cookies
-    secure:true,
+    secure:false,
     sameSite: 'none', // Set SameSite attribute; can be 'none', 'lax', or 'strict'
     maxAge: 3600000 // Cookie expiration time in milliseconds (1 hour)
   }
