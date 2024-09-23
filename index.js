@@ -40,7 +40,7 @@ const opts = {
 };
 // CORS configuration
 const corsOptions = {
-  origin: 'http://localhost:8001', // Your React app's URL
+  origin: 'https://frontend-ecom-plum.vercel.app', // Your React app's URL
   credentials: true, // Allow credentials (cookies)
   exposedHeaders : ['X-Total-Count']
 };
