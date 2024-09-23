@@ -12,6 +12,7 @@ exports.isAuth = (req, res, next) => {
 };
 
 exports.sanitizeUser = (user) => {  
+  
   return { id: user.id, role: user.role };
 };
 

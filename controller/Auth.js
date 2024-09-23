@@ -49,8 +49,8 @@ exports.loginUser = async (req, res) => {
   if (!isMatch) {
      res.status(401).json({message:"unauthorized user"})
   } 
-  else{
-    req.login(sanitizeUser(doc), (err) => {
+  else{        
+    req.login(sanitizeUser(doc) , (err) => {
       // this is also call serializer and adds to session
       if (err) {
         res.status(400).json(err);
@@ -59,7 +59,7 @@ exports.loginUser = async (req, res) => {
           expiresIn: "1h",
         }); 
         res
-          .cookie("jwt", token, {
+          .cookie("jwt", token, { 
             expires: new Date(Date.now() + 3600000),
             httpOnly: true,
             secure: false, // Set to true if using HTTPS
@@ -67,6 +67,7 @@ exports.loginUser = async (req, res) => {
           })
           .status(200)
           .json({id:doc.id,role:doc.role});
+         
         // Return created product with status 201 (Created)
       }
     });

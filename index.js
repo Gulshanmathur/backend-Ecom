@@ -23,6 +23,7 @@ const dotenv = require('dotenv');
 dotenv.config()
 const { isAuth, sanitizeUser, cookieExtracter } = require("./services/common");
 const { Server } = require("http");
+const { AsyncLocalStorage } = require("async_hooks");
 //webhook
 const endpointSecret = process.env.ENDPOINT_SECRET;
 const server = express();
@@ -135,9 +136,12 @@ passport.use('local',new LocalStrategy(
 passport.use(
   new JwtStrategy(opts, async (jwt_payload, done) => {  
     try {     
-      const user = await User.findOne({id:jwt_payload.sub}); // Assuming the ID is stored in the token
+        
+         
+      const user = await User.findOne({_id:jwt_payload.id}); // Assuming the ID is stored in the token
      
-      
+    
+       
       if (user) {
      
         return done(null,sanitizeUser(user)); // this calls serializer
