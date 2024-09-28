@@ -2,7 +2,8 @@ const Category = require("../model/Category");
 const User = require("../model/User");
 
 exports.fetchUserById = async (req,res)=>{
-    const {id} = req.user;
+   console.log(req.params)
+    const {id} = req.params; 
     try {
         const user = await User.findById(id);    
         res.status(200).json(user)

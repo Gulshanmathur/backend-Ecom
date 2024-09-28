@@ -22,8 +22,7 @@ const User = require("./model/User");
 const dotenv = require('dotenv');
 dotenv.config()
 const { isAuth, sanitizeUser, cookieExtracter } = require("./services/common");
-const { Server } = require("http");
-const { AsyncLocalStorage } = require("async_hooks");
+
 //webhook
 const endpointSecret = process.env.ENDPOINT_SECRET;
 const server = express();
@@ -40,9 +39,10 @@ const opts = {
 };
 // CORS configuration
 const corsOptions = {
-  origin: 'http://localhost:8001', // Your React app's URL
+  origin: process.env.origin, // Your React app's URL  
   credentials: true, // Allow credentials (cookies)
-  exposedHeaders : ['X-Total-Count']
+  exposedHeaders : ['X-Total-Count'],
+
 };
 
 server.use(cors(corsOptions))
@@ -86,7 +86,12 @@ server.use(session({
   secret: process.env.SESSION_SECRET_KEY,
   resave: false, // don't save session if unmodified
   saveUninitialized: false, // don't create session until something stored
-  // store: new SQLiteStore({ db: 'sessions.db', dir: './var/db' })
+  // cookie: {
+  //   httpOnly: true, // Prevents JavaScript access to cookies
+  //   secure:false,
+  //   sameSite: 'none', // Set SameSite attribute; can be 'none', 'lax', or 'strict'
+  //   maxAge: 3600000 // Cookie expiration time in milliseconds (1 hour)
+  // }
 }));
 // server.use(cors({
 //   origin: 'http://localhost:8001', // React app's URL
@@ -97,16 +102,16 @@ server.use(cookieParser());
 server.use(passport.initialize());
 server.use(passport.session());
 server.use(passport.authenticate('session'));
-server.use(express.json());
+server.use(express.json()); 
 server.use(express.urlencoded({extended:false}));
 // server.use(express.raw({type: 'application/json'}));
-server.use('/products',isAuth,productsRouter)  //we can also use JWT token for client-only auth
-server.use('/categories',isAuth,categoriesRouter)
-server.use('/brands',isAuth,brandRouter)
-server.use('/users',isAuth,usersRouter)
+server.use('/products',productsRouter)  //we can also use JWT token for client-only auth
+server.use('/categories',categoriesRouter)
+server.use('/brands',brandRouter)
+server.use('/users',usersRouter) 
 server.use('/auth',authRouter)
-server.use('/cart',isAuth,cartRouter)
-server.use('/ordersnow',isAuth,ordersRouter) 
+server.use('/cart',cartRouter)
+server.use('/ordersnow',ordersRouter)  
 
 // server.get('*', (req,res)=>res.sendFile(path.resolve(__dirname, '..', 'Frontend', 'dist', 'index.html')));
 //pasport strategies
@@ -136,12 +141,9 @@ passport.use('local',new LocalStrategy(
 passport.use(
   new JwtStrategy(opts, async (jwt_payload, done) => {  
     try {     
+      const user = await User.findOne({_id:jwt_payload.id}); // Assuming the ID is stored in the token
         
          
-      const user = await User.findOne({_id:jwt_payload.id}); // Assuming the ID is stored in the token
-     
-    
-       
       if (user) {
      
         return done(null,sanitizeUser(user)); // this calls serializer
@@ -156,6 +158,7 @@ passport.use(
 
 // this create session variable req.user on being called from callbacks
 passport.serializeUser((user, done) => { 
+  console.log("inside seralizer",{user})
   done(null,{id:user.id,role:user.role});  // here session has created   //{id:user.id,role:user.role}
   //after above done() function end here login api called
 });

@@ -1,7 +1,7 @@
 const Order = require("../model/Order");
 
 exports.fetchOrdersByUser = async (req,res)=>{  
-  const {id} = req.user
+  const {id} = req.params
   // console.log({userId});
   
     try {

@@ -47,7 +47,7 @@ exports.loginUser = async (req, res) => {
   const doc = await User.findOne({email:email});
   const isMatch = await bcrypt.compare(password,doc.password.toString('utf-8'));
   if (!isMatch) {
-     res.status(401).json({message:"unauthorized user"})
+     res.status(401).json({message:"unauthorized user"}) 
   } 
   else{        
     req.login(sanitizeUser(doc) , (err) => {
@@ -56,14 +56,14 @@ exports.loginUser = async (req, res) => {
         res.status(400).json(err);
       } else {
         const token = jwt.sign(sanitizeUser(doc), process.env.SECRET_KEY, {
-          expiresIn: "1h",
+          expiresIn: "1h", 
         }); 
         res
           .cookie("jwt", token, { 
             expires: new Date(Date.now() + 3600000),
             httpOnly: true,
-            secure: false, // Set to true if using HTTPS
-            // sameSite:'None'  // Important for cross-origin cookies
+            secure: true,// Set to true if using HTTPS
+            sameSite:'None'  // Important for cross-origin cookies
           })
           .status(200)
           .json({id:doc.id,role:doc.role});
@@ -104,6 +104,8 @@ exports.loginUser = async (req, res) => {
 };
 
 exports.checkUser = async (req, res) => {  
+  console.log(req.credentials);
+  
   if(req.user){
     res.json(req.user);  
   }else{
@@ -114,8 +116,9 @@ exports.checkUser = async (req, res) => {
 exports.signOut = async (req,res)=>{
   res.cookie('jwt', '', {
     httpOnly: true,
-    secure: false, // Set to true if using HTTPS
-    expires: new Date(0) // Set expiration date to the past to delete the cookie
+    secure: true, // Set to true if using HTTPS
+    expires: new Date(0), // Set expiration date to the past to delete the cookie
+    sameSite:'None'
   });
   res.status(200).json({ message: 'Signed out successfully' });
 
