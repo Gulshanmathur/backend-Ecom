@@ -93,11 +93,6 @@ server.use(session({
   //   maxAge: 3600000 // Cookie expiration time in milliseconds (1 hour)
   // }
 }));
-// server.use(cors({
-//   origin: 'http://localhost:8001', // React app's URL
-//   credentials: true // Allow credentials (cookies)
-// }));
-
 server.use(cookieParser());
 server.use(passport.initialize());
 server.use(passport.session());
