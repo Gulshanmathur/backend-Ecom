@@ -3,7 +3,6 @@ const User = require("../model/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { sanitizeUser } = require("../services/common");
-const { findOne } = require("../model/Product");
 const dotenv = require('dotenv');
 dotenv.config()
 exports.createUser = async (req, res) => {
